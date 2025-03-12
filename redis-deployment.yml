@@ -1,39 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
-  labels:
-    app: redis
+  name: redis-deployment
+  namespace: vote
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: voting-app
+      component: redis
   template:
     metadata:
       labels:
-        app: redis
+        app: voting-app
+        component: redis
     spec:
       containers:
       - name: redis
-        image: redis:latest
-        ports:
-        - containerPort: 6379
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "256Mi"
-          requests:
-            cpu: "0.2"
-            memory: "128Mi"
+        image: redis:alpine
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: redis-data
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: redis
+  namespace: vote
 spec:
+  type: ClusterIP
+  selector:
+    app: voting-app
+    component: redis
   ports:
   - port: 6379
     targetPort: 6379
-  selector:
-    app: redis
