@@ -29,6 +29,6 @@ spec:
   ports:
   - port: 5000
     targetPort: 80
-    nodePort: 30004
+    nodePort: 31000
   selector:
     app: voting-app
